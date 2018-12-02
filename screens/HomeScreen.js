@@ -10,6 +10,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { WebBrowser, MapView } from 'expo';
+import Polyline from '@mapbox/polyline';
 
 import Button from '../components/Button';
 
@@ -50,10 +51,30 @@ export default class HomeScreen extends React.Component {
       lat: '',
       lng: '',
     },
+    coords: [],
+  }
+
+  async getDirections(startLoc, destinationLoc) {
+    try {
+      const resp = await axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyCoIq1v0zM4YbH68GzgoB92Hu_ppJSLcqI`);
+      const respJson = resp.data;
+      console.log(respJson);
+
+      const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
+      const coords = points.map(point => ({
+        latitude: point[0],
+        longitude: point[1],
+      }));
+      this.setState(state => ({ coords: state.coords.concat(coords) }));
+      return coords;
+    } catch (error) {
+      return error;
+    }
   }
 
   componentDidMount() {
     this.fetchLocationInterval = setInterval(this.fetchVehicleLocation, 1000 * 10);
+    this.getDirections('41.085250,29.046162', '41.076824,29.043070');
   }
 
   componentWillUnmount() {
@@ -98,8 +119,14 @@ export default class HomeScreen extends React.Component {
               latitude: this.state.vehicle.lat,
               longitude: this.state.vehicle.lng,
             }}
-
           />
+
+          <MapView.Polyline
+            coordinates={this.state.coords}
+            strokeWidth={2}
+            strokeColor="red"
+          />
+
         </MapView>
 
         <View style={styles.topInfoContainer}>

@@ -5,7 +5,6 @@ import {
 import {
   AppLoading, Asset, Font, Icon,
 } from 'expo';
-import store from './store';
 import AppNavigator from './navigation/AppNavigator';
 
 export default class App extends React.Component {
