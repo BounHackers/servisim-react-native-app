@@ -58,8 +58,6 @@ export default class HomeScreen extends React.Component {
     try {
       const resp = await axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=AIzaSyCoIq1v0zM4YbH68GzgoB92Hu_ppJSLcqI`);
       const respJson = resp.data;
-      console.log(respJson);
-
       const points = Polyline.decode(respJson.routes[0].overview_polyline.points);
       const coords = points.map(point => ({
         latitude: point[0],
